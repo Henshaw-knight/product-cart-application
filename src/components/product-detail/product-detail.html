@@ -1,1 +1,81 @@
-<p>product-detail works!</p>
+<div class="product-detail-container">
+  @if (loading) {
+    <div class="loading">
+      <p>Loading product...</p>
+    </div>
+  } @else if (error) {
+    <div class="error">
+      <h2>{{ error }}</h2>
+      <button routerLink="/products" class="back-btn">Back to Products</button>
+    </div>
+  } @else if (product) {
+    <div class="product-detail">
+      <button (click)="goBack()" class="back-btn">Back to Products</button>
+      
+      <div class="product-content">
+        <div class="product-image">
+          <img [src]="product.imageUrl" [alt]="product.name" />
+          @if (!product.inStock) {
+            <div class="out-of-stock-badge">Out of Stock</div>
+          }
+        </div>
+        
+        <div class="product-info">
+          <div class="product-category">
+            <span class="category-badge">{{ category || product.category }}</span>
+          </div>
+          
+          <h1 class="product-name">{{ product.name }}</h1>
+          
+          <div class="product-rating">
+            <!-- <span class="stars">{{ '⭐'.repeat(Math.round(product.rating)) }}</span> -->
+            <span class="rating-text">{{ product.rating }} / 5</span>
+          </div>
+          
+          <p class="product-description">{{ product.description }}</p>
+          
+          <div class="product-price">
+            <span class="price">${{ product.price.toFixed(2) }}</span>
+          </div>
+          
+          <div class="product-actions">
+            @if (!isInCart) {
+              <button 
+                (click)="addToCart()" 
+                class="btn btn-primary"
+                [disabled]="!product.inStock">
+                @if (product.inStock) {
+                  <span>🛒 Add to Cart</span>
+                } @else {
+                  <span>Out of Stock</span>
+                }
+              </button>
+            } @else {
+              <button (click)="removeFromCart()" class="btn btn-danger">
+                ❌ Remove from Cart
+              </button>
+            }
+            
+            <a routerLink="/cart" class="btn btn-secondary">
+              View Cart
+            </a>
+          </div>
+          
+          <div class="product-meta">
+            <div class="meta-item">
+              <strong>Product ID:</strong> {{ product.id }}
+            </div>
+            <div class="meta-item">
+              <strong>Availability:</strong> 
+              @if (product.inStock) {
+                <span class="in-stock">In Stock</span>
+              } @else {
+                <span class="out-of-stock">Out of Stock</span>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
