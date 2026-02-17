@@ -80,7 +80,7 @@ export class ProductDetail implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         if (this.product) {
-          this.isInCart = this.productService.isInCart(this.product.id);
+          this.isInCart = this.productService.isInCart(this.product.id!);
           this.cdr.markForCheck();
         }
       });
@@ -103,7 +103,7 @@ export class ProductDetail implements OnInit {
         next: (product) => {
           // console.log('Product loaded:', product);
           this.product = product;
-          this.isInCart = this.productService.isInCart(product.id);
+          this.isInCart = this.productService.isInCart(product.id!);
           this.loading = false;
           this.cdr.markForCheck();
         },
@@ -124,7 +124,7 @@ export class ProductDetail implements OnInit {
 
   removeFromCart(): void {
     if (this.product) {
-      this.productService.removeFromCart(this.product.id);
+      this.productService.removeFromCart(this.product.id!);
     }
   }
 

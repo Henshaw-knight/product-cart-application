@@ -31,7 +31,7 @@
               <p class="item-price">${{ item.price.toFixed(2) }}</p>
             </div>
             <div class="item-actions">
-              <button (click)="removeFromCart(item.id)" class="remove-btn">
+              <button (click)="removeFromCart(item.id!)" class="remove-btn">
                 Remove
               </button>
             </div>
