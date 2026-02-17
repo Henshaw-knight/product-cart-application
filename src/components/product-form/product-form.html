@@ -1,1 +1,215 @@
-<p>product-form works!</p>
+<div class="form-container">
+  <div class="form-header">
+    <a routerLink="/products" class="back-link">← Back to Products</a>
+    <h1>Add New Product</h1>
+    <p>Fill in the details below to add a new product</p>
+  </div>
+
+  <!-- Success Message -->
+  @if (successMessage) {
+    <div class="alert alert-success">
+      <span>✅</span> {{ successMessage }}
+    </div>
+  }
+
+  <!-- Error Message -->
+  @if (errorMessage) {
+    <div class="alert alert-error">
+      <span>❌</span> {{ errorMessage }}
+    </div>
+  }
+
+  <!-- Reactive Form -->
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
+
+    <!-- Name -->
+    <div class="form-group" [class.invalid]="isFieldInvalid('name')">
+      <label for="name">Product Name <span class="required">*</span></label>
+      <input
+        id="name"
+        type="text"
+        formControlName="name"
+        placeholder="Enter product name"
+      />
+      @if (isFieldInvalid('name')) {
+        <span class="error-message">{{ getFieldErrors('name') }}</span>
+      }
+    </div>
+
+    <!-- Description -->
+    <div class="form-group" [class.invalid]="isFieldInvalid('description')">
+      <label for="description">Description <span class="required">*</span></label>
+      <textarea
+        id="description"
+        formControlName="description"
+        placeholder="Enter product description (at least 10 characters)"
+        rows="4"
+      ></textarea>
+      @if (isFieldInvalid('description')) {
+        <span class="error-message">{{ getFieldErrors('description') }}</span>
+      }
+    </div>
+
+    <!-- Price and Rating Row -->
+    <div class="form-row">
+
+      <!-- Price -->
+      <div class="form-group" [class.invalid]="isFieldInvalid('price')">
+        <label for="price">Price ($) <span class="required">*</span></label>
+        <input
+          id="price"
+          type="number"
+          formControlName="price"
+          placeholder="Minimum $50"
+          min="50"
+        />
+        @if (isFieldInvalid('price')) {
+          <span class="error-message">{{ getFieldErrors('price') }}</span>
+        }
+      </div>
+
+      <!-- Rating -->
+      <div class="form-group" [class.invalid]="isFieldInvalid('rating')">
+        <label for="rating">Rating (0-5) <span class="required">*</span></label>
+        <input
+          id="rating"
+          type="number"
+          formControlName="rating"
+          placeholder="Enter rating (0-5)"
+          min="0"
+          max="5"
+          step="0.1"
+        />
+        @if (isFieldInvalid('rating')) {
+          <span class="error-message">{{ getFieldErrors('rating') }}</span>
+        }
+      </div>
+
+    </div>
+
+    <!-- Category -->
+    <div class="form-group" [class.invalid]="isFieldInvalid('category')">
+      <label for="category">Category <span class="required">*</span></label>
+      <select id="category" formControlName="category">
+        <option value="" disabled>Select a category</option>
+        @for (cat of categories; track cat) {
+          <option [value]="cat">{{ cat }}</option>
+        }
+      </select>
+      @if (isFieldInvalid('category')) {
+        <span class="error-message">{{ getFieldErrors('category') }}</span>
+      }
+    </div>
+
+    <!-- Image URL -->
+    <div class="form-group" [class.invalid]="isFieldInvalid('imageUrl')">
+      <label for="imageUrl">Image URL <span class="required">*</span></label>
+      <input
+        id="imageUrl"
+        type="text"
+        formControlName="imageUrl"
+        placeholder="https://example.com/image.jpg"
+      />
+      @if (isFieldInvalid('imageUrl')) {
+        <span class="error-message">{{ getFieldErrors('imageUrl') }}</span>
+      }
+    </div>
+
+    <!-- In Stock -->
+    <div class="form-group form-group-checkbox">
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          formControlName="inStock"
+        />
+        <span>In Stock</span>
+      </label>
+    </div>
+
+    <!-- FormArray: Properties -->
+    <div class="form-section">
+      <div class="section-header">
+        <h3>Product Properties</h3>
+        <button type="button" class="btn-add" (click)="addProperty()">
+          + Add Property
+        </button>
+      </div>
+
+      <!-- FormArray Container -->
+      <div formArrayName="properties">
+
+        @for (property of properties.controls; track $index) {
+          <div class="property-group" [formGroupName]="$index">
+            <div class="property-header">
+              <h4>Property {{ $index + 1 }}</h4>
+
+              <!-- Remove button - disabled when only 1 property -->
+              <button
+                type="button"
+                class="btn-remove"
+                (click)="removeProperty($index)"
+                [disabled]="properties.length === 1"
+              >
+                Remove
+              </button>
+            </div>
+
+            <div class="property-fields">
+
+              <!-- Color -->
+              <div class="form-group" [class.invalid]="isPropertyFieldInvalid($index, 'color')">
+                <label>Color <span class="required">*</span></label>
+                <input
+                  type="text"
+                  formControlName="color"
+                  placeholder="e.g. Red, Blue, Black"
+                />
+                @if (isPropertyFieldInvalid($index, 'color')) {
+                  <span class="error-message">{{ getPropertyFieldErrors($index, 'color') }}</span>
+                }
+              </div>
+
+              <!-- Weight -->
+              <div class="form-group" [class.invalid]="isPropertyFieldInvalid($index, 'weight')">
+                <label>Weight <span class="required">*</span></label>
+                <input
+                  type="text"
+                  formControlName="weight"
+                  placeholder="e.g. 200g, 1.5kg"
+                />
+                @if (isPropertyFieldInvalid($index, 'weight')) {
+                  <span class="error-message">{{ getPropertyFieldErrors($index, 'weight') }}</span>
+                }
+              </div>
+
+            </div>
+          </div>
+        }
+
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onReset()">
+        Reset Form
+      </button>
+
+      <!-- Disabled when form is invalid -->
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="productForm.invalid || isSubmitting">
+        @if (isSubmitting) {
+          <span>Creating...</span>
+        } @else {
+          <span>Create Product</span>
+        }
+      </button>
+    </div>
+
+  </form>
+</div>
