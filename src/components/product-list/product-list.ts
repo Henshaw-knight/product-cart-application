@@ -1,13 +1,13 @@
 import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Product, ProductCard } from '../product-card/product-card';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product';
 import { SearchInput } from '../search-input/search-input';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
-  imports: [ProductCard, SearchInput],
+  imports: [ProductCard, SearchInput, RouterLink],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
 })

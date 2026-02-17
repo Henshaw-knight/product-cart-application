@@ -67,7 +67,7 @@ export class ProductService {
     // localStorage.removeItem('cart');
   }
 
-  // Add to existing ProductService
+  // Create product via POST
   createProduct(product: Product): Observable<Product> {
     return this.httpClient.post<Product>(this.apiURL, product);
   }

@@ -1,13 +1,19 @@
 <main class="main-container">
     <div class="products-header">
-        <h2>Our Products</h2>
+        <div class="header-top">
+            <h2>Our Products</h2>
+            <a routerLink="/products/new" class="btn-create">
+                + Add New Product
+            </a>
+        </div>
 
         <div class="search-container">
             <app-search-input (searchChange)="onSearchChange($event)"></app-search-input>
         </div>
+        
         @if (searchQuery) {
             <p class="search-info">
-                Showing results for: <strong> {{ searchQuery }}</strong>
+                Showing results for: <strong>{{ searchQuery }}</strong>
             </p>
         }
     </div>
@@ -27,7 +33,7 @@
                 @for (product of filteredProducts; track product.id) {
                     <app-product-card
                         [product]="product"
-                        [isSelected]="isProductInCart(product.id)"
+                        [isSelected]="isProductInCart(product.id!)"
                         (productClick)="onProductClick($event)">
                     </app-product-card>
                 }
