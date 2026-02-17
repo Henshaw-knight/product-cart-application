@@ -31,7 +31,7 @@ export class ProductService {
   // Add product to cart
   addToCart(product: Product): void {
     const cart = this.cartSubject.value;
-    if (!this.isInCart(product.id)) {
+    if (!this.isInCart(product.id!)) {
       const updatedCart = [...cart, product];
       this.cartSubject.next(updatedCart);
       this.saveCart(updatedCart);
@@ -65,5 +65,10 @@ export class ProductService {
   clearCart(): void {
     this.cartSubject.next([]);
     // localStorage.removeItem('cart');
+  }
+
+  // Add to existing ProductService
+  createProduct(product: Product): Observable<Product> {
+    return this.httpClient.post<Product>(this.apiURL, product);
   }
 }
