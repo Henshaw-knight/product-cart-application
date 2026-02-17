@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 
 export interface Product {
-  id: number;
+  id?: number;
   name: string;
   description: string;
   price: number;
@@ -11,6 +11,12 @@ export interface Product {
   imageUrl: string;
   inStock: boolean;
   rating: number;
+  properties?: Property[];
+}
+
+export interface Property {
+  colour: string;
+  weight: string;
 }
 
 @Component({
