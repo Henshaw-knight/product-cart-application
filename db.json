@@ -1,7 +1,7 @@
 {
   "products": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Wireless Headphones",
       "description": "Premium noise-cancelling wireless headphones with 30-hour battery life",
       "price": 199.99,
@@ -11,7 +11,7 @@
       "rating": 4.5
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Smart Watch",
       "description": "Advanced fitness tracking and health monitoring on your wrist",
       "price": 299.99,
@@ -21,7 +21,7 @@
       "rating": 4.7
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "Laptop Stand",
       "description": "Ergonomic aluminum laptop stand for improved posture and comfort",
       "price": 49.99,
@@ -31,7 +31,7 @@
       "rating": 4.3
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "Mechanical Keyboard",
       "description": "RGB backlit gaming keyboard with tactile mechanical switches",
       "price": 129.99,
@@ -41,7 +41,7 @@
       "rating": 4.6
     },
     {
-      "id": 5,
+      "id": "5",
       "name": "Wireless Mouse",
       "description": "Precision wireless mouse with ergonomic design and long battery",
       "price": 59.99,
@@ -51,7 +51,7 @@
       "rating": 4.4
     },
     {
-      "id": 6,
+      "id": "6",
       "name": "USB-C Hub",
       "description": "Multi-port USB-C hub with HDMI, USB 3.0, and SD card reader",
       "price": 79.99,
@@ -61,7 +61,7 @@
       "rating": 4.2
     },
     {
-      "id": 7,
+      "id": "7",
       "name": "Webcam HD",
       "description": "1080p HD webcam with auto-focus and built-in noise-cancelling mic",
       "price": 89.99,
@@ -71,7 +71,7 @@
       "rating": 4.5
     },
     {
-      "id": 8,
+      "id": "8",
       "name": "Phone Stand",
       "description": "Adjustable aluminum phone stand for desk and bedside use",
       "price": 24.99,
@@ -79,6 +79,22 @@
       "imageUrl": "https://images.unsplash.com/photo-1600003014755-ba31aa59c4b6?w=400&h=300&fit=crop",
       "inStock": true,
       "rating": 4.1
+    },
+    {
+      "id": "2478",
+      "name": "Nike Air Zoom Pegasus",
+      "description": "Lightweight and comfortable running shoes designed for daily training and long-distance runs.",
+      "price": 120,
+      "category": "Clothing",
+      "imageUrl": "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
+      "inStock": true,
+      "rating": 4.6,
+      "properties": [
+        {
+          "color": "Black",
+          "weight": "3kg"
+        }
+      ]
     }
   ]
 }

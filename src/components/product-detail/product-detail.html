@@ -1,14 +1,22 @@
 <div class="product-detail-container">
-  @if (loading) {
-    <div class="loading">
-      <p>Loading product...</p>
+  <!-- Loading State -->
+  @if (loading$ | async ) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p class="loading-text">Loading product...</p>
     </div>
-  } @else if (error) {
-    <div class="error">
-      <h2>{{ error }}</h2>
-      <button routerLink="/products" class="back-btn">Back to Products</button>
+  }
+  <!-- Error State -->
+  @else if (errorMessage) {
+    <div class="error-container">
+      <div class="error-icon">⚠️</div>
+      <h2>Unable to Load Product</h2>
+      <p class="error-message">{{ errorMessage }}</p>
+      <button routerLink="/products" class="btn-back">Back to Products</button>
     </div>
-  } @else if (product) {
+  }
+  <!-- Product Display -->
+  @else if (product) {
     <div class="product-detail">
       <button (click)="goBack()" class="back-btn">Back to Products</button>
       
@@ -39,7 +47,7 @@
           </div>
           
           <div class="product-actions">
-            @if (!isInCart) {
+            @if (!isInCart()) {
               <button 
                 (click)="addToCart()" 
                 class="btn btn-primary"

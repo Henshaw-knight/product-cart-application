@@ -18,37 +18,47 @@
         }
     </div>
 
-    @if (loading) {
-        <div class="loading">
-            <p>Loading products...</p>
+    <!-- Loading State -->
+    @if (loading$ | async) {
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text">Loading products...</p>
         </div>
-    } @else if (error) {
-        <div class="error">
-            <p>{{ error }}</p>
-            <button (click)="loadProducts()" class="retry-btn">Retry</button>
+    }
+    <!-- Error state -->
+    @else if (errorMessage) {
+        <div class="error-container">
+            <div class="error-icon">⚠️</div>
+            <h3>Unable to Load Products</h3>
+            <p class="error-message">{{ errorMessage }}</p>
+            <button (click)="loadProducts()" class="retry-btn">Try Again</button>
         </div>
-    } @else {
-        @if (filteredProducts.length > 0) {
-            <div class="products-grid">
-                @for (product of filteredProducts; track product.id) {
-                    <app-product-card
-                        [product]="product"
-                        [isSelected]="isProductInCart(product.id!)"
-                        (productClick)="onProductClick($event)">
-                    </app-product-card>
-                }
-            </div>
-        } @else {
-            <div class="no-results">
-                <div class="no-results-content">
-                  <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                  </svg>
-                  <h3>No products found</h3>
-                  <p>Try adjusting your search terms</p>
+    }
+    
+    <!-- Products Display -->
+    @else {
+        @if (filteredProducts$ | async; as products) {
+            @if (products.length > 0) {
+                <div class="products-grid">
+                    @for (product of products; track product.id) {
+                        <app-product-card
+                            [product]="product"
+                            [isSelected]="isProductInCart(product.id!)"
+                            (productClick)="onProductClick($event)">
+                        </app-product-card>
+                    }
                 </div>
-            </div>
+            } @else {
+                <!-- Empty State -->
+                <div class="empty-state">
+                    <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <h3>No products found</h3>
+                    <p>Try adjusting your search terms</p>
+                </div>
+            }
         }
     }
 </main>

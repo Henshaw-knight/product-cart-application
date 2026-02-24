@@ -1,29 +1,41 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { AbstractControl, FormArray, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators 
+} from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product';
+import { AsyncPipe } from '@angular/common';
+import { State } from '../../services/state';
 
 
 function urlValidator(control: AbstractControl): ValidationErrors | null {
   if (!control.value) return null;
-  const urlPattern = /^(https?:\/\/)([a-zA-z0-9-]+\.)+[a-zA-z]{2,}(\/\s*)?$/;
+  const urlPattern = /^(https?:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/;
   return urlPattern.test(control.value) ? null : { invalidUrl: true };
 }
 
 @Component({
   selector: 'app-product-form',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AsyncPipe],
   templateUrl: './product-form.html',
   styleUrl: './product-form.css',
 })
 export class ProductForm implements OnInit {
   private productService = inject(ProductService);
   private router = inject(Router);
+  private stateService = inject(State);
 
   // Available categories
   categories = ['Electronics', 'Accessories', 'Clothing', 'Books', 'Home & Garden'];
 
-  isSubmitting = false;
+  loading$ = this.stateService.loading$;
+
   successMessage = '';
   errorMessage = '';
 
@@ -136,7 +148,6 @@ export class ProductForm implements OnInit {
       return;
     }
 
-    this.isSubmitting = true;
     this.successMessage = '';
     this.errorMessage = '';
 
@@ -155,9 +166,8 @@ export class ProductForm implements OnInit {
 
     this.productService.createProduct(newProduct).subscribe({
       next: (product) => {
-        this.isSubmitting = false;
         this.successMessage = `"${product.name}" has been added successfully!`;
-        this.productForm.reset();
+        this.productForm.reset({ inStock: true});
 
         // Reset properties to one empty group
         while (this.properties.length > 1) {
@@ -171,8 +181,8 @@ export class ProductForm implements OnInit {
         }, 2000);
       },
       error: (error) => {
-        this.isSubmitting = false;
-        this.errorMessage = 'Failed to create product. Please try again.';
+        // Display error from ErrorHandlerService
+        this.errorMessage = error.message;
         console.error('Error creating product:', error);
       }
     });

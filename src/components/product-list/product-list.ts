@@ -3,72 +3,61 @@ import { Product, ProductCard } from '../product-card/product-card';
 import { Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product';
 import { SearchInput } from '../search-input/search-input';
-import { Subject, takeUntil } from 'rxjs';
+import { map, Subject, takeUntil } from 'rxjs';
+import { State } from '../../services/state';
+import { AppError } from '../../services/error-handler';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-product-list',
-  imports: [ProductCard, SearchInput, RouterLink],
+  imports: [ProductCard, SearchInput, RouterLink, AsyncPipe],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
 })
-export class ProductList implements OnInit, OnDestroy {
+export class ProductList implements OnInit {
   private productService = inject(ProductService);
+  private stateService = inject(State);
   private router = inject(Router);
-  private cdr = inject(ChangeDetectorRef);
-  private destroy$ = new Subject<void>();
+  // private cdr = inject(ChangeDetectorRef);
+  // private destroy$ = new Subject<void>();
 
-  products: Product[] = [];
-  filteredProducts: Product[] = [];
   searchQuery: string = '';
-  loading: boolean = true;
-  error: string = '';
+
+  products$ = this.stateService.products$;
+  loading$ = this.stateService.loading$;
+
+  filteredProducts$ = this.products$.pipe(
+    map(products => this.filterProducts(products))
+  );
+
+  errorMessage: string = '';
 
   ngOnInit(): void {
-    // console.log('Here here');
     this.loadProducts();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
 
 
   loadProducts(): void {
-    this.loading = true;
-    this.productService.getAllProducts()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: (products) => {
-        // console.log(products);
-        this.products = products;
-        this.filterProducts();
-        this.loading = false;
-        this.cdr.markForCheck(); 
-      },
-      error: (error) => {
-        this.error = 'Failed to load products. Please  make sure JSON Server is running.';
-        this.loading = false;
-        console.error('Error loading products: ', error);
-        this.cdr.markForCheck();
+    this.errorMessage = '';
+    this.productService.getAllProducts().subscribe({
+      error: (error: AppError) => {
+        this.errorMessage = error.message;
       }
     });
   }
 
   onSearchChange(query: string): void {
     this.searchQuery = query;
-    this.filterProducts();
-    this.cdr.markForCheck(); 
   }
 
-  filterProducts(): void {
+  private filterProducts(products: Product[]): Product[] {
     if (!this.searchQuery.trim()) {
-      this.filteredProducts = this.products;
-    } else {
-      this.filteredProducts = this.products.filter(product => 
-        product.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+      return products;
     }
+    return products.filter(product =>
+      product.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
   }
 
   onProductClick(product: Product): void {
@@ -78,6 +67,6 @@ export class ProductList implements OnInit, OnDestroy {
   }
 
   isProductInCart(productId: number): boolean {
-    return this.productService.isInCart(productId);
+    return this.stateService.isInCart(productId);
   }
 }

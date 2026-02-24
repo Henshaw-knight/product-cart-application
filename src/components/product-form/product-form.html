@@ -194,7 +194,8 @@
       <button
         type="button"
         class="btn btn-secondary"
-        (click)="onReset()">
+        (click)="onReset()"
+        [disabled]="loading$ | async">
         Reset Form
       </button>
 
@@ -202,9 +203,13 @@
       <button
         type="submit"
         class="btn btn-primary"
-        [disabled]="productForm.invalid || isSubmitting">
-        @if (isSubmitting) {
-          <span>Creating...</span>
+        [disabled]="productForm.invalid || (loading$ | async)">
+        @if (loading$ | async) {
+          <span class="btn-loading">
+            <span class="btn-spinner">
+              Creating...
+            </span>
+          </span>
         } @else {
           <span>Create Product</span>
         }
