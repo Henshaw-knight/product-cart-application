@@ -5,9 +5,15 @@
         <h1>🛒 ShopCart</h1>
       </a>
     </div>
-    
-    <div class="cart-badge-container">
-      <a routerLink="/cart" class="cart-link">
+
+    <!-- Show user info and logout when authenticated -->
+    @if (isAuthenticated$ | async) {
+      <div class="navbar-actions">
+        <div class="user-info">
+          <span class="user-email">{{ currentUser }} </span>
+        </div>
+
+        <a routerLink="/cart" class="cart-link">
         <div class="cart-icon">
           <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="9" cy="21" r="1"></circle>
@@ -21,6 +27,11 @@
           }
         </div>
       </a>
+      
+      <button (click)="logout()" class="logout-btn">
+        Logout
+      </button>
     </div>
+    }
   </div>
 </nav>

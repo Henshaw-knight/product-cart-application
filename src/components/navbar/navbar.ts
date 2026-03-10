@@ -5,6 +5,7 @@ import { ProductService } from '../../services/product';
 import { filter } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { State } from '../../services/state';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-navbar',
@@ -14,19 +15,22 @@ import { State } from '../../services/state';
 })
 export class Navbar {
   private stateService = inject(State);
+  private authService = inject(AuthService);
 
   // Use of async pipe - no manual subscription needed
   cartCounts$ = this.stateService.cartCount$;
+  isAuthenticated$ = this.authService.isAuthenticated$;
+
+  // Get current user email
+  get currentUser(): string | null {
+    return this.authService.getCurrentUser();
+  }
 
 
-  // cartCount = 0;
-
-  // private productService = inject(ProductService);
-  // private router = inject(Router);
-
-  // ngOnInit(): void {
-  //   this.productService.cart$.subscribe(cart => {
-  //     this.cartCount = cart.length;
-  //   });
-  // }
+  // Logout
+  logout(): void {
+    if (confirm('Are you sure you want to log out?')) {
+      this.authService.logout();
+    }
+  }
 }
