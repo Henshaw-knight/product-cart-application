@@ -1,20 +1,22 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
 
   errorMessage = '';
   isSubmitting = false;
+  returnUrl: string = '/products';
 
 
   // Reactive form with validation
@@ -25,9 +27,13 @@ export class Login implements OnInit {
 
 
   ngOnInit(): void {
+    // Get return URL from query params
+    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/products';
+    console.log(this.returnUrl);
+
     // Redirect if already logged in
     if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/products']);
+      this.router.navigate([this.returnUrl]);
     }
   }
 
@@ -77,7 +83,7 @@ export class Login implements OnInit {
       if (email && password) {
         // Login successful - store email and navigate
         this.authService.login(email);
-        this.router.navigate(['/products']);
+        this.router.navigate([this.returnUrl]);
       } else {
         this.errorMessage = 'Invalid credentials. Please try again';
         this.isSubmitting = false;
