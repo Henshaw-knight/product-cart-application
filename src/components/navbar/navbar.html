@@ -1,22 +1,37 @@
 <nav class="navbar">
   <div class="navbar-container">
     <div class="navbar-logo">
-      <h1>🛒 ShopCart</h1>
+      <a routerLink="/">
+        <h1>🛒 ShopCart</h1>
+      </a>
     </div>
-    
-    <app-search-input (searchChange)="onSearchChange($event)"></app-search-input>
-    
-    <div class="cart-badge-container">
-      <div class="cart-icon">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="9" cy="21" r="1"></circle>
-          <circle cx="20" cy="21" r="1"></circle>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-        </svg>
-        @if (cartCount > 0) {
-          <span class="cart-badge">{{ cartCount }}</span>
-        }
-      </div>
+
+    <!-- Show user info and logout when authenticated -->
+    @if (isAuthenticated$ | async) {
+      <div class="navbar-actions">
+        <div class="user-info">
+          <span class="user-email">{{ currentUser }} </span>
+        </div>
+
+        <a routerLink="/cart" class="cart-link">
+        <div class="cart-icon">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          @if (cartCounts$ | async; as count) {
+             @if (count > 0) {
+              <span class="cart-badge">{{ count }}</span>
+            }
+          }
+        </div>
+      </a>
+      
+      <button (click)="logout()" class="logout-btn">
+        Logout
+      </button>
     </div>
+    }
   </div>
 </nav>

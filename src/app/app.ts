@@ -2,22 +2,21 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navbar } from '../components/navbar/navbar';
 import { Product, ProductCard } from '../components/product-card/product-card';
-import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, ProductCard, CommonModule],
+  imports: [RouterOutlet, Navbar],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
   protected readonly title = signal('angular-product-cart-application');
 
-  searchQuery: string = '';
-  cart: Product[] = [];
+  // searchQuery: string = '';
+  // cart: Product[] = [];
 
-  products: Product[] = [
+  /** products: Product[] = [
     {
       id: 1,
       name: 'Wireless Headphones',
@@ -75,8 +74,9 @@ export class App {
       imageUrl: 'https://images.unsplash.com/photo-1600003014755-ba31aa59c4b6?w=400&h=300&fit=crop'
     }
   ];
+  **/
 
-  get filteredProducts(): Product[] {
+  /** get filteredProducts(): Product[] {
     if (!this.searchQuery.trim()) {
       return this.products;
     }
@@ -84,17 +84,18 @@ export class App {
     return this.products.filter(product => 
       product.name.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
-  }
+  } **/
 
-  get cartCount(): number {
+  /** get cartCount(): number {
     return this.cart.length;
-  }
+  } **/
 
-  onSearchQueryChange(query: string): void {
-    this.searchQuery = query;
-  }
+  // onSearchQueryChange(query: string): void {
+  //   // this.searchQuery = query;
+  //   console.log('Search query: ', query);
+  // }
 
-  onProductClick(product: Product): void {
+  /** onProductClick(product: Product): void {
     const index = this.cart.findIndex(item => item.id === product.id);
 
     if (index > -1) {
@@ -104,9 +105,9 @@ export class App {
       // Add product to cart
       this.cart.push(product);
     }
-  }
+  } **/
 
-  isProductInCart(productId: number): boolean {
+  /** isProductInCart(productId: number): boolean {
     return this.cart.some(item => item.id === productId);
-  }
+  } **/
 }
