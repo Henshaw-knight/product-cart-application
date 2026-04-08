@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Product } from '../product-card/product-card';
+// import { Product } from '../product-card/product-card';
+import { Product } from '../../models/product.model';
 import { ProductService } from '../../services/product';
 import { AsyncPipe } from '@angular/common';
 import { State } from '../../services/state';

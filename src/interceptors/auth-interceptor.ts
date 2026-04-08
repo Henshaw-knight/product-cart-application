@@ -14,17 +14,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  const userEmail = localStorage.getItem('userEmail');
+  const token = localStorage.getItem('access_token');
 
   // If user is logged in, email is added to request header
-  if (userEmail) {
+  if (token) {
     const clonedRequest = req.clone({
       setHeaders: {
-        'X-User-Email': userEmail
+        Authorization: `Bearer ${token}`,
       }
     });
 
-    console.log('Adding X-User-Email header:', userEmail);
     return next(clonedRequest);
   }
 

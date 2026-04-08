@@ -1,7 +1,7 @@
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { BehaviorSubject, map } from 'rxjs';
-import { Product } from '../components/product-card/product-card';
 import { isPlatformBrowser } from '@angular/common';
+import { Product } from '../models/product.model';
 
 // Global app state shape
 export interface AppState {
@@ -137,7 +137,7 @@ export class State {
 
     try {
       const savedCart = localStorage.getItem('cart');
-    return savedCart ? JSON.parse(savedCart) : [];
+    return savedCart ? (JSON.parse(savedCart) as Product[]) : [];
     } catch (error) {
       console.error('Error loading cart from localStorage: ', error);
       return [];

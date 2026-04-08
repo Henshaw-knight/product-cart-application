@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { Product, ProductCard } from '../product-card/product-card';
+import { ProductCard } from '../product-card/product-card';
 import { Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product';
 import { SearchInput } from '../search-input/search-input';
@@ -7,6 +7,7 @@ import { map, Subject, takeUntil } from 'rxjs';
 import { State } from '../../services/state';
 import { AppError } from '../../services/error-handler';
 import { AsyncPipe } from '@angular/common';
+import { Product } from '../../models/product.model';
 
 @Component({
   selector: 'app-product-list',

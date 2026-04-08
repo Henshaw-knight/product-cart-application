@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
-import { Product } from '../product-card/product-card';
+// import { Product } from '../product-card/product-card';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product';
 import { Subject, takeUntil } from 'rxjs';
 import { State } from '../../services/state';
 import { AppError } from '../../services/error-handler';
 import { AsyncPipe } from '@angular/common';
+import { Product } from '../../models/product.model';
 
 
 @Component({

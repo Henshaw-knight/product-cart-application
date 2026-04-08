@@ -1,23 +1,24 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Product } from '../../models/product.model';
 
 
-export interface Product {
-  id?: number;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  imageUrl: string;
-  inStock: boolean;
-  rating: number;
-  properties?: Property[];
-}
+// export interface Product {
+//   id?: number;
+//   name: string;
+//   description: string;
+//   price: number;
+//   category: string;
+//   imageUrl: string;
+//   inStock: boolean;
+//   rating: number;
+//   properties?: Property[];
+// }
 
-export interface Property {
-  colour: string;
-  weight: string;
-}
+// export interface Property {
+//   colour: string;
+//   weight: string;
+// }
 
 @Component({
   selector: 'app-product-card',
