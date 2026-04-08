@@ -1,7 +1,11 @@
 import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
+import { environment } from '../environments/environment';
+import { AuthResponse, LoginPayload, SignupPayload } from '../models/auth.model';
+import { ApiResponse } from '../models/product.model';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +13,11 @@ import { BehaviorSubject } from 'rxjs';
 export class AuthService {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
+  private httpClient = inject(HttpClient);
   private isBrowser!: boolean;
+
+  private baseUrl = `${environment.apiUrl}/auth`;
+  private readonly TOKEN_KEY = 'access_token';
 
   // BehaviorSubject to track authentication state
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
@@ -17,33 +25,36 @@ export class AuthService {
   // Exposed as observable for components
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  private readonly USER_EMAIL_KEY = 'userEmail';
-
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
 
     if (this.isBrowser) {
-      const email = this.getCurrentUser();
-      if (email) {
+      const token = this.getToken();
+      if (token) {
         this.isAuthenticatedSubject.next(true);
       }
     }
   }
 
-  /**
-   * Login user - store email in localStorage and update state
-   */
-  login(email: string): void {
-    if (!this.isBrowser) return;
-
-    try {
-      localStorage.setItem(this.USER_EMAIL_KEY, email);
-      this.isAuthenticatedSubject.next(true);
-      console.log('User logged in: ', email);
-    } catch (error) {
-      console.error('Error storing user email: ', error);
-    }
+  signup(payload: SignupPayload): Observable<ApiResponse<null>> {
+    return this.httpClient.post<ApiResponse<null>>(
+      `${this.baseUrl}/signup`,
+      payload,
+    );
   }
+
+  login(payload: LoginPayload): Observable<string> {
+    return this.httpClient
+      .post<ApiResponse<AuthResponse>>(`${this.baseUrl}/login`, payload)
+      .pipe(
+        map((response) => {
+          const token = response.data?.access_token ?? '';
+          this.storeToken(token);
+          this.isAuthenticatedSubject.next(true);
+          return token;
+        }),
+      );
+    }
 
 
   /**
@@ -53,10 +64,9 @@ export class AuthService {
     if (!this.isBrowser) return;
 
     try {
-      localStorage.removeItem(this.USER_EMAIL_KEY);
+      localStorage.removeItem(this.TOKEN_KEY);
       this.isAuthenticatedSubject.next(false);
-      this.router.navigate(['/login']);
-      console.log('User logged out');
+      void this.router.navigate(['/login']);
     } catch (error) {
       console.error('Error during logout: ', error);
     }
@@ -68,24 +78,34 @@ export class AuthService {
    */
   isLoggedIn(): boolean {
     if (!this.isBrowser) return false;
-    return !!this.getCurrentUser();
+    return !!this.getToken();
   }
 
 
-  /**
-   * Get current user email
-   */
-  getCurrentUser(): string | null {
+  getToken(): string | null {
     if (!this.isBrowser) return null;
 
     try {
-      return localStorage.getItem(this.USER_EMAIL_KEY);
+      return localStorage.getItem(this.TOKEN_KEY);
     } catch (error) {
-      console.error('Error reading user email: ', error);
+      console.error('Error reading token', error);
       return null;
     }
   }
 
+
+  getCurrentUser(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.email as string;
+    } catch {
+      return null;
+    }
+  }
+  
 
   /**
    * Get authentication state
@@ -95,9 +115,13 @@ export class AuthService {
   }
 
 
+  private storeToken(token: string): void {
+    if (!this.isBrowser) return;
 
-
-
-
-  
+    try {
+      localStorage.setItem(this.TOKEN_KEY, token);
+    } catch (error) {
+      console.error('Error storing token: ', error);
+    }
+  }  
 }

@@ -1,7 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navbar } from '../components/navbar/navbar';
-import { Product, ProductCard } from '../components/product-card/product-card';
+// import { Product, ProductCard } from '../components/product-card/product-card';
+import { ProductCard } from '../components/product-card/product-card';
+import { Product } from '../models/product.model';
 
 
 @Component({

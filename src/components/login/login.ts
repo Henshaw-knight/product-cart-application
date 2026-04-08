@@ -77,18 +77,18 @@ export class Login implements OnInit {
 
     const { email, password } = this.loginForm.value;
 
-
-    // Simulate authentication
-    setTimeout(() => {
-      if (email && password) {
-        // Login successful - store email and navigate
-        this.authService.login(email);
-        this.router.navigate([this.returnUrl]);
-      } else {
-        this.errorMessage = 'Invalid credentials. Please try again';
+    this.authService.login({
+      email: email!,
+      password: password!,
+    }).subscribe({
+      next: () => {
+        void this.router.navigate([this.returnUrl]);
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message ?? 'Invalid credentials. Please try again';
         this.isSubmitting = false;
       }
-    }, 500); // Simulate API delay
+    });    
   }
 
 }

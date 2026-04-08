@@ -46,7 +46,7 @@ export class ProductForm implements OnInit {
     price: new FormControl<number | null>(null, [Validators.required, Validators.min(50)]),
     category: new FormControl('', [Validators.required]),
     imageUrl: new FormControl('', [Validators.required, urlValidator]),
-    inStock: new FormControl(true),
+    inStock: new FormControl<boolean>(true),
     rating: new FormControl<number | null>(null, [Validators.required, Validators.min(0), Validators.max(5)]),
     properties: new FormArray([this.createPropertyGroup()])
   });

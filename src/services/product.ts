@@ -1,15 +1,17 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, tap, catchError } from 'rxjs';
-import { Product } from '../components/product-card/product-card';
+import { Observable, BehaviorSubject, tap, catchError, map } from 'rxjs';
 import { ErrorHandler } from './error-handler';
 import { State } from './state';
+import { environment } from '../environments/environment';
+import { AuthService } from './auth';
+import { ApiResponse, CreateProductPayload, Product } from '../models/product.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductService {
-  private apiURL = 'http://localhost:3000/products';
+  private apiURL = `${environment.apiUrl}/products`;
   private cartSubject = new BehaviorSubject<Product[]>([]);
 
   cart$ = this.cartSubject.asObservable();
@@ -17,12 +19,27 @@ export class ProductService {
   private httpClient = inject(HttpClient);
   private errorHandler = inject(ErrorHandler);
   private stateService = inject(State);
+  private authService = inject(AuthService);
+
+  private getAuthHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
+    })
+  }
 
   getAllProducts(): Observable<Product[]> {
     this.stateService.setLoading(true);
     this.stateService.clearError();
 
-    return this.httpClient.get<Product[]>(this.apiURL).pipe(
+    return this.httpClient.get<ApiResponse<Product[]>>(this.apiURL, {
+      headers: this.getAuthHeaders(),
+    })
+    .pipe(
+      map((response) => (response.data ?? []).map((product) => ({
+        ...product,
+        price: Number(product.price),
+        rating: Number(product.rating),
+      }))),
       tap(products => {
         this.stateService.setProducts(products);
         this.stateService.setLoading(false);
@@ -38,24 +55,37 @@ export class ProductService {
     this.stateService.setLoading(true);
     this.stateService.clearError();
 
-    return this.httpClient.get<Product>(`${this.apiURL}/${id}`).pipe(
-      tap(() => {
-        this.stateService.setLoading(false);
-      }),
-      catchError(error => {
-        this.stateService.setLoading(false);
-        return this.errorHandler.handleError(error);
+    return this.httpClient
+      .get<ApiResponse<Product>>(`${this.apiURL}/${id}`, {
+        headers: this.getAuthHeaders(),
       })
+      .pipe(
+        map((response) => ({
+          ...response.data as Product,
+          price: Number(response.data?.price),
+          rating: Number(response.data?.rating),
+        })),
+        tap(() => {
+          this.stateService.setLoading(false);
+        }),
+        catchError(error => {
+          this.stateService.setLoading(false);
+          return this.errorHandler.handleError(error);
+        })
     );
   }
 
   
   // Create product via POST
-  createProduct(product: Product): Observable<Product> {
+  createProduct(product: CreateProductPayload): Observable<Product> {
     this.stateService.setLoading(true);
     this.stateService.clearError();
 
-    return this.httpClient.post<Product>(this.apiURL, product).pipe(
+    return this.httpClient.post<ApiResponse<Product>>(this.apiURL, product, {
+      headers: this.getAuthHeaders(),
+    })
+    .pipe(
+      map((response) => response.data as Product),
       tap(newProduct => {
         this.stateService.addProduct(newProduct);
         this.stateService.setLoading(false);
