@@ -88,7 +88,7 @@
     </div>
 
     <!-- Category -->
-    <div class="form-group" [class.invalid]="isFieldInvalid('category')">
+    <!-- <div class="form-group" [class.invalid]="isFieldInvalid('category')">
       <label for="category">Category <span class="required">*</span></label>
       <select id="category" formControlName="category">
         <option value="" disabled>Select a category</option>
@@ -98,6 +98,29 @@
       </select>
       @if (isFieldInvalid('category')) {
         <span class="error-message">{{ getFieldErrors('category') }}</span>
+      }
+    </div> -->
+
+    <div class="form-group">
+      <label for="categoryId">Category <span class="required">*</span></label>
+    
+      @if (categoriesError) {
+        <p class="error-text">{{ categoriesError }}</p>
+      } @else {
+        <select
+          id="categoryId"
+          formControlName="categoryId"
+          class="form-control"
+          [class.is-invalid]="isFieldInvalid('categoryId')">
+          <option value="" disabled selected>Select a category</option>
+          @for (category of categories; track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+    
+        @if (isFieldInvalid('categoryId')) {
+          <span class="error-message">{{ getFieldErrors('categoryId') }}</span>
+        }
       }
     </div>
 
