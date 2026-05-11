@@ -12,6 +12,8 @@ import { Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product';
 import { AsyncPipe } from '@angular/common';
 import { State } from '../../services/state';
+import { Category } from '../../models/category.model';
+import { CategoriesService } from '../../services/categories';
 
 
 function urlValidator(control: AbstractControl): ValidationErrors | null {
@@ -28,13 +30,17 @@ function urlValidator(control: AbstractControl): ValidationErrors | null {
 })
 export class ProductForm implements OnInit {
   private productService = inject(ProductService);
+  private categoriesService = inject(CategoriesService);
   private router = inject(Router);
   private stateService = inject(State);
 
-  // Available categories
-  categories = ['Electronics', 'Accessories', 'Clothing', 'Books', 'Home & Garden'];
-
   loading$ = this.stateService.loading$;
+
+  // Available categories
+  // categories = ['Electronics', 'Accessories', 'Clothing', 'Books', 'Home & Garden'];
+
+  categories: Category[] = [];
+  categoriesError = '';
 
   successMessage = '';
   errorMessage = '';
@@ -44,14 +50,27 @@ export class ProductForm implements OnInit {
     name: new FormControl('', [Validators.required, Validators.minLength(3)]),
     description: new FormControl('', [Validators.required, Validators.minLength(10)]),
     price: new FormControl<number | null>(null, [Validators.required, Validators.min(50)]),
-    category: new FormControl('', [Validators.required]),
+    categoryId: new FormControl<number | null>(null, [Validators.required]),
     imageUrl: new FormControl('', [Validators.required, urlValidator]),
     inStock: new FormControl<boolean>(true),
     rating: new FormControl<number | null>(null, [Validators.required, Validators.min(0), Validators.max(5)]),
     properties: new FormArray([this.createPropertyGroup()])
   });
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.loadCategories();
+  }
+
+  loadCategories(): void {
+    this.categoriesService.getAll().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: () => {
+        this.categoriesError = 'Failed to load categories. Please try again.';
+      },
+    });
+  }
 
   // Create a FormGroup for each property
   createPropertyGroup(): FormGroup {
@@ -133,7 +152,7 @@ export class ProductForm implements OnInit {
       name: 'Name',
       description: 'Description',
       price: 'Price',
-      category: 'Category',
+      categoryId: 'Category',
       imageUrl: 'Image URL',
       rating: 'Rating'
     };
@@ -157,11 +176,13 @@ export class ProductForm implements OnInit {
       name: formValue.name!,
       description: formValue.description!,
       price: Number(formValue.price),
-      category: formValue.category!,
+      categoryId: Number(formValue.categoryId),
       imageUrl: formValue.imageUrl!,
       inStock: formValue.inStock ?? true,
       rating: Number(formValue.rating),
-      properties: formValue.properties
+      properties: (formValue.properties ?? []).filter(
+        (p): p is { colour: string; weight: string } => !!p.colour && !!p.weight,
+      ),
     };
 
     this.productService.createProduct(newProduct).subscribe({
