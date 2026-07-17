@@ -1,3 +1,5 @@
+import { Category } from "./category.model";
+
 export interface Property {
   id?: number;
   colour: string;
@@ -10,10 +12,10 @@ export interface Product {
   description: string;
   price: number;
   inStock: boolean;
-  category: string;
   imageUrl: string;
   rating: number;
-  properties?: Property[]
+  properties?: Property[];
+  category?: Category;
   owner?: {
     id: number;
     firstName: string;
@@ -29,9 +31,9 @@ export interface CreateProductPayload {
   description: string;
   price: number;
   inStock: boolean;
-  category: string;
   imageUrl: string;
   rating: number;
+  categoryId: number;
   properties?: { colour: string; weight: string }[]; 
 }
 
